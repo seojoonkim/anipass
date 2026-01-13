@@ -295,15 +295,6 @@ export default function Feed() {
 
         // 1단계: 먼저 10개만 빠르게 로드
         const initialData = await feedService.getFeed(initialLimit, 0, showFollowing);
-        console.log('[Feed] Initial data loaded:', initialData);
-        const charActivities = initialData?.filter(a => a.activity_type === 'character_rating' || a.activity_type === 'character_review');
-        console.log('[Feed] Character activities:', charActivities?.map(a => ({
-          type: a.activity_type,
-          user: a.user_id,
-          item: a.item_id,
-          review_id: a.review_id,
-          comments_count: a.comments_count
-        })));
         updateActivitiesForFilter(currentFilter, initialData || []);
 
         // 좋아요/댓글 정보 초기화
@@ -660,23 +651,12 @@ export default function Feed() {
       const reviewType = isCharacter ? 'character' : 'anime';
       const reviewId = activity.review_id;
 
-      console.log('[Feed] loadComments:', 'KEY=' + key, 'REVIEW_ID=' + reviewId, 'TYPE=' + reviewType);
-
       if (!reviewId || reviewId <= 0) {
-        console.log('[Feed] No review_id, skipping');
         return;
       }
 
       // 직접 API 호출
       const data = await reviewCommentService.getReviewComments(reviewId, reviewType);
-
-      console.log('[Feed] GOT COMMENTS:', 'COUNT=' + (data.items?.length || 0));
-      console.log('[Feed] RAW COMMENT DATA:', JSON.stringify(data.items?.map(c => ({
-        id: c.id,
-        parent_comment_id: c.parent_comment_id,
-        content: c.content?.substring(0, 20),
-        replies: c.replies?.map(r => ({ id: r.id, parent_comment_id: r.parent_comment_id }))
-      })), null, 2));
 
       let topLevelComments = [];
 
@@ -687,11 +667,9 @@ export default function Feed() {
 
       if (hasNestedReplies) {
         // 이미 중첩 구조 - 그대로 사용
-        console.log('[Feed] Using nested structure from backend');
         topLevelComments = data.items || [];
       } else {
         // 평평한 구조 - 중첩 구조로 변환
-        console.log('[Feed] Converting flat structure to nested');
         const commentsMap = new Map();
         const tempTopLevel = [];
 
@@ -720,11 +698,6 @@ export default function Feed() {
 
         topLevelComments = tempTopLevel;
       }
-
-      console.log('[Feed] FINAL STRUCTURE:', topLevelComments.map(c => ({
-        id: c.id,
-        replies_count: c.replies?.length || 0
-      })));
 
       // 댓글과 답글의 좋아요 정보 초기화
       const newCommentLikes = {};
@@ -1489,27 +1462,12 @@ export default function Feed() {
                     </div>
   
                     {/* Comments Section */}
-                    {expandedComments.has(activityKey) && (() => {
-                      // 로그는 댓글이 로드되지 않은 경우에만
-                      if (!comments[activityKey] || comments[activityKey].length === 0) {
-                        console.log('[Feed] RENDER: NO COMMENTS',
-                          'KEY=' + activityKey,
-                          'HAS_KEY=' + comments.hasOwnProperty(activityKey),
-                          'ALL_KEYS=', Object.keys(comments)
-                        );
-                      }
-                      return true;
-                    })() && (
+                    {expandedComments.has(activityKey) && (
                       <div className="mt-3 pt-3 border-t border-gray-200">
                         {/* Comments List */}
                         {comments[activityKey]?.length > 0 && (
                           <div className="space-y-3 mb-3">
-                            {comments[activityKey].map((comment) => {
-                              // Debug log for each comment
-                              if (comment.replies && comment.replies.length > 0) {
-                                console.log(`[Feed Render] Comment ${comment.id} has ${comment.replies.length} replies:`, comment.replies.map(r => r.id));
-                              }
-                              return (
+                            {comments[activityKey].map((comment) => (
                               <div key={comment.id} className="space-y-2">
                                 {/* Main Comment */}
                                 <div className="flex gap-2">
