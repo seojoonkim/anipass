@@ -370,6 +370,15 @@ export default function MyAniPass() {
         setWatchlistAnime(allRatingsData.watchlist || []);
         setPassAnime(allRatingsData.pass || []);
 
+        // Update stats with average rating and counts for immediate display
+        setStats(prev => ({
+          ...prev,
+          average_rating: allRatingsData.average_rating,
+          total_rated: allRatingsData.total_rated || 0,
+          total_want_to_watch: allRatingsData.total_watchlist || 0,
+          total_pass: allRatingsData.total_pass || 0
+        }));
+
         // Apply initial filter
         filterAnimeBySubMenu(allAnimeData, animeSubMenu);
         setLoadedTabs(prev => ({ ...prev, anime: true }));
