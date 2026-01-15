@@ -298,8 +298,8 @@ export default function RateCharacters() {
         ) : filteredCharacters.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
             {filteredCharacters.map((character) => {
-              const hasRated = character.my_rating && character.my_rating > 0;
-              const status = characterStatuses[character.id];
+              const status = characterStatuses[character.id] || character.my_status;
+              const hasRated = (character.my_rating && character.my_rating > 0) || status === 'RATED';
               const isCompleted = hasRated || status === 'WANT_TO_KNOW' || status === 'NOT_INTERESTED';
 
               return (
@@ -376,7 +376,7 @@ export default function RateCharacters() {
                   )}
 
                   {/* Show rating stars on rated characters */}
-                  {hasRated && character.my_rating > 0 && hoveredCharacter !== character.id && starSizes[character.id] && (
+                  {hasRated && hoveredCharacter !== character.id && starSizes[character.id] && character.my_rating && character.my_rating > 0 && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
                       <div className="flex gap-1" style={{ fontSize: starSizes[character.id] }}>
                         {[1, 2, 3, 4, 5].map((position) => {
