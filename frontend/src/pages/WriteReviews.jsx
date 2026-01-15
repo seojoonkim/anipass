@@ -646,6 +646,7 @@ export default function WriteReviews() {
                       </div>
                     )}
                   </div>
+                  </div>
                 </div>
               </div>
             );
