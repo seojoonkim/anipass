@@ -381,6 +381,10 @@ export default function ActivityCard({
     }
 
     try {
+      console.log('=== User Post Update Debug ===');
+      console.log('activity.review_id:', activity.review_id);
+      console.log('activity.item_id:', activity.item_id);
+      console.log('Full activity object:', JSON.stringify(activity, null, 2));
       await userPostService.updatePost(activity.review_id, editPostContent);
       setShowEditModal(false);
 
