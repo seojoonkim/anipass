@@ -35,7 +35,7 @@ def sync_korean_names():
     cursor.execute("SELECT COUNT(*) FROM character WHERE name_korean IS NOT NULL AND name_korean != ''")
     existing_count = cursor.fetchone()[0]
 
-    if existing_count > 1000:
+    if existing_count >= 47000:
         print(f"Already have {existing_count} Korean names in DB, skipping sync")
         conn.close()
         return existing_count
