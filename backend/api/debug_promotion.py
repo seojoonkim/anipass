@@ -131,6 +131,37 @@ def trace_promotion(user_id: int, target_score: int):
     return result
 
 
+@router.get("/check-promotions/{user_id}")
+def check_promotions(user_id: int):
+    """
+    Check all rank promotions with metadata
+    모든 승급 메시지와 metadata 확인
+    """
+    promotions = db.execute_query(
+        """
+        SELECT id, user_id, activity_type, activity_time, metadata
+        FROM activities
+        WHERE user_id = ? AND activity_type = 'rank_promotion'
+        ORDER BY activity_time DESC
+        """,
+        (user_id,)
+    )
+
+    return {
+        'count': len(promotions),
+        'promotions': [
+            {
+                'id': p[0],
+                'user_id': p[1],
+                'activity_type': p[2],
+                'activity_time': p[3],
+                'metadata': p[4]
+            }
+            for p in promotions
+        ]
+    }
+
+
 @router.get("/check-status/{user_id}")
 def check_user_status(user_id: int):
     """
