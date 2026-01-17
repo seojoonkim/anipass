@@ -103,7 +103,7 @@ def upload_file_bytes_to_r2(
             Key=object_key,
             Body=file_bytes,
             ContentType=content_type,
-            CacheControl='public, max-age=31536000',
+            CacheControl='public, max-age=3600, must-revalidate',  # 1시간 캐시, 재검증 필요
         )
 
         public_url = f"{R2_PUBLIC_URL}/{object_key}"

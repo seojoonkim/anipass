@@ -58,9 +58,7 @@ export const getCharacterImageUrl = (characterId, imageUrl = null) => {
 
   if (!finalUrl) return '/placeholder-anime.svg';
 
-  // 캐시 우회: URL에 타임스탬프 추가
-  const separator = finalUrl.includes('?') ? '&' : '?';
-  return `${finalUrl}${separator}t=${Date.now()}`;
+  return finalUrl;
 };
 
 /**
