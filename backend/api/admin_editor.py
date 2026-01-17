@@ -374,13 +374,12 @@ async def upload_image(
                             print(f"[Admin Editor] Failed to delete old image: {e}")
 
         if is_r2_configured():
-            # item_id를 파일명으로 사용하되, 캐시 우회를 위해 타임스탬프 추가
+            # item_id를 파일명으로 사용 (항상 .jpg로 저장)
             if item_id:
-                timestamp = int(datetime.now().timestamp())
                 if type == "character":
-                    object_key = f"images/characters/{item_id}_{timestamp}.jpg"
+                    object_key = f"images/characters/{item_id}.jpg"
                 else:  # anime
-                    object_key = f"images/covers/{item_id}_{timestamp}.jpg"
+                    object_key = f"images/covers/{item_id}.jpg"
             else:
                 # item_id가 없으면 타임스탬프 사용 (fallback)
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
