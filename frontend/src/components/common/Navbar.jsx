@@ -247,16 +247,17 @@ export default function Navbar() {
           <div className="grid grid-cols-1 md:grid-cols-4 items-center h-9 md:h-12 md:gap-4 pb-1 md:pb-0">
             {/* Logo and Mobile User Menu */}
             <div className="flex items-center justify-between md:col-span-1">
-              <Link to="/feed" className="flex items-center gap-1 md:gap-1.5 text-base md:text-lg font-bold text-text-primary hover:opacity-60 transition-opacity group">
-                {/* AniPass Logo Icon */}
-                <div className="relative">
-                  <img
-                    src="/logo.png"
-                    alt="AniBite Logo"
-                    className="w-6 h-6 md:w-7 md:h-7 object-contain rounded-md"
-                  />
+              <Link to="/feed" className="flex items-center gap-1.5 md:gap-2 hover:opacity-80 transition-opacity group">
+                {/* Logo Icon */}
+                <div className="w-6 h-6 md:w-7 md:h-7 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <span className="text-white font-bold text-sm md:text-base" style={{ fontFamily: "'Inter', sans-serif" }}>A</span>
                 </div>
-                <span className="">AniBite</span>
+                <span
+                  className="text-lg md:text-xl font-semibold tracking-tight text-white"
+                  style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}
+                >
+                  Anibite
+                </span>
               </Link>
 
               {/* Mobile User Menu - Only visible on mobile */}
