@@ -1694,3 +1694,91 @@ def clean_duplicates_endpoint():
     except Exception as e:
         import traceback
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}\n{traceback.format_exc()}")
+
+
+@router.get("/check-character-duplicates/{character_id}")
+def check_character_duplicates(character_id: int):
+    """
+    Check duplicate ratings for a specific character
+    특정 캐릭터의 중복 평가 확인
+    """
+    try:
+        # Get character info
+        char_info = db.execute_query("""
+            SELECT id, name_full, name_korean
+            FROM character
+            WHERE id = ?
+        """, (character_id,), fetch_one=True)
+
+        if not char_info:
+            return {"error": "Character not found"}
+
+        # Get all ratings for this character
+        ratings = db.execute_query("""
+            SELECT cr.id, cr.user_id, u.username, cr.rating, cr.created_at, cr.updated_at
+            FROM character_ratings cr
+            JOIN users u ON cr.user_id = u.id
+            WHERE cr.character_id = ?
+            ORDER BY cr.user_id, cr.updated_at DESC
+        """, (character_id,))
+
+        # Group by user to find duplicates
+        by_user = {}
+        for rating in ratings:
+            user_id = rating[1]
+            if user_id not in by_user:
+                by_user[user_id] = []
+            by_user[user_id].append({
+                'id': rating[0],
+                'username': rating[2],
+                'rating': rating[3],
+                'created': rating[4],
+                'updated': rating[5]
+            })
+
+        # Find users with multiple ratings
+        duplicates = {user_id: ratings_list for user_id, ratings_list in by_user.items() if len(ratings_list) > 1}
+
+        # Get activities for this character
+        activities = db.execute_query("""
+            SELECT id, user_id, anime_title, rating, activity_time
+            FROM activities
+            WHERE activity_type = 'character_rating'
+              AND item_id = ?
+            ORDER BY user_id, activity_time DESC
+        """, (character_id,))
+
+        # Group activities by user
+        act_by_user = {}
+        for act in activities:
+            user_id = act[1]
+            if user_id not in act_by_user:
+                act_by_user[user_id] = []
+            act_by_user[user_id].append({
+                'id': act[0],
+                'anime': act[2],
+                'rating': act[3],
+                'time': act[4]
+            })
+
+        act_duplicates = {user_id: acts_list for user_id, acts_list in act_by_user.items() if len(acts_list) > 1}
+
+        return {
+            "character": {
+                "id": char_info[0],
+                "name": char_info[1],
+                "korean": char_info[2]
+            },
+            "total_ratings": len(ratings),
+            "unique_users": len(by_user),
+            "users_with_duplicates": len(duplicates),
+            "duplicate_details": duplicates,
+            "total_activities": len(activities),
+            "activities_by_user": len(act_by_user),
+            "activities_with_duplicates": len(act_duplicates),
+            "activity_duplicate_details": act_duplicates
+        }
+
+    except Exception as e:
+        import traceback
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}\n{traceback.format_exc()}")
