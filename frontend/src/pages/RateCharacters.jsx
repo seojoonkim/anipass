@@ -461,27 +461,51 @@ export default function RateCharacters() {
                         {/* Show rating stars on rated characters - hide on hover */}
                         {hasRated && starSizes[character.id] && character.my_rating && character.my_rating > 0 && (
                           <div className={`absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-opacity duration-150 ${hoveredCharacter === character.id ? 'opacity-0' : 'opacity-100'}`}>
-                            <div className="flex gap-1 drop-shadow-lg" style={{ fontSize: starSizes[character.id] }}>
+                            <div className="flex drop-shadow-lg" style={{ gap: '2px' }}>
                               {[1, 2, 3, 4, 5].map((position) => {
                                 const rating = character.my_rating;
-                                const gradientStyle = {
-                                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%)',
-                                  WebkitBackgroundClip: 'text',
-                                  WebkitTextFillColor: 'transparent',
-                                  backgroundClip: 'text'
-                                };
+                                const starPath = "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z";
+                                const size = starSizes[character.id];
 
                                 if (rating >= position) {
-                                  return <span key={position} style={gradientStyle}>★</span>;
+                                  return (
+                                    <svg key={position} style={{ width: size, height: size }} fill="url(#star-gradient-char)" viewBox="0 0 20 20">
+                                      <defs>
+                                        <linearGradient id="star-gradient-char" x1="0%" y1="0%" x2="100%" y2="100%">
+                                          <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
+                                          <stop offset="50%" style={{ stopColor: '#FFA500', stopOpacity: 1 }} />
+                                          <stop offset="100%" style={{ stopColor: '#FF8C00', stopOpacity: 1 }} />
+                                        </linearGradient>
+                                      </defs>
+                                      <path d={starPath} />
+                                    </svg>
+                                  );
                                 } else if (rating >= position - 0.5) {
                                   return (
-                                    <span key={position} className="relative inline-block">
-                                      <span className="text-white/40">★</span>
-                                      <span className="absolute top-0 left-0 overflow-hidden w-1/2" style={gradientStyle}>★</span>
-                                    </span>
+                                    <div key={position} className="relative" style={{ width: size, height: size }}>
+                                      <svg className="w-full h-full text-white/40" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d={starPath} />
+                                      </svg>
+                                      <div className="absolute top-0 left-0 overflow-hidden w-1/2 h-full">
+                                        <svg className="h-full" fill="url(#star-gradient-char-half)" viewBox="0 0 20 20" style={{ width: '200%' }}>
+                                          <defs>
+                                            <linearGradient id="star-gradient-char-half" x1="0%" y1="0%" x2="100%" y2="100%">
+                                              <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
+                                              <stop offset="50%" style={{ stopColor: '#FFA500', stopOpacity: 1 }} />
+                                              <stop offset="100%" style={{ stopColor: '#FF8C00', stopOpacity: 1 }} />
+                                            </linearGradient>
+                                          </defs>
+                                          <path d={starPath} />
+                                        </svg>
+                                      </div>
+                                    </div>
                                   );
                                 }
-                                return <span key={position} className="text-white/40">★</span>;
+                                return (
+                                  <svg key={position} style={{ width: size, height: size }} className="text-white/40" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d={starPath} />
+                                  </svg>
+                                );
                               })}
                             </div>
                           </div>
@@ -500,32 +524,53 @@ export default function RateCharacters() {
                             onMouseLeave={() => setHoverRating(prev => ({ ...prev, [character.id]: 0 }))}
                           >
                             <div className="w-full flex flex-col items-center justify-center">
-                              <div className="flex gap-1" style={{
-                                fontSize: starSizes[character.id]
-                              }}>
+                              <div className="flex" style={{ gap: '2px' }}>
                                 {[1, 2, 3, 4, 5].map((position) => {
                                   const currentRating = getCurrentRating(character);
                                   const displayRating = hoverRating[character.id] || currentRating;
-
-                                  const gradientStyle = {
-                                    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%)',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent',
-                                    backgroundClip: 'text'
-                                  };
+                                  const starPath = "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z";
+                                  const size = starSizes[character.id];
 
                                   let starContent;
                                   if (displayRating >= position) {
-                                    starContent = <span style={gradientStyle}>★</span>;
+                                    starContent = (
+                                      <svg style={{ width: size, height: size }} fill="url(#star-gradient-char-overlay)" viewBox="0 0 20 20">
+                                        <defs>
+                                          <linearGradient id="star-gradient-char-overlay" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
+                                            <stop offset="50%" style={{ stopColor: '#FFA500', stopOpacity: 1 }} />
+                                            <stop offset="100%" style={{ stopColor: '#FF8C00', stopOpacity: 1 }} />
+                                          </linearGradient>
+                                        </defs>
+                                        <path d={starPath} />
+                                      </svg>
+                                    );
                                   } else if (displayRating >= position - 0.5) {
                                     starContent = (
-                                      <span className="relative inline-block">
-                                        <span className="text-white/40">★</span>
-                                        <span className="absolute top-0 left-0 overflow-hidden w-1/2" style={gradientStyle}>★</span>
-                                      </span>
+                                      <div className="relative" style={{ width: size, height: size }}>
+                                        <svg className="w-full h-full text-white/40" fill="currentColor" viewBox="0 0 20 20">
+                                          <path d={starPath} />
+                                        </svg>
+                                        <div className="absolute top-0 left-0 overflow-hidden w-1/2 h-full">
+                                          <svg className="h-full" fill="url(#star-gradient-char-overlay-half)" viewBox="0 0 20 20" style={{ width: '200%' }}>
+                                            <defs>
+                                              <linearGradient id="star-gradient-char-overlay-half" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
+                                                <stop offset="50%" style={{ stopColor: '#FFA500', stopOpacity: 1 }} />
+                                                <stop offset="100%" style={{ stopColor: '#FF8C00', stopOpacity: 1 }} />
+                                              </linearGradient>
+                                            </defs>
+                                            <path d={starPath} />
+                                          </svg>
+                                        </div>
+                                      </div>
                                     );
                                   } else {
-                                    starContent = <span className="text-white/40">★</span>;
+                                    starContent = (
+                                      <svg style={{ width: size, height: size }} className="text-white/40" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d={starPath} />
+                                      </svg>
+                                    );
                                   }
 
                                   return (
