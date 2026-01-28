@@ -173,7 +173,8 @@ export default function Feed() {
         const latestNotification = notificationGroup[0];
 
         return {
-          id: `notification-${latestNotification.activity_type}-${latestNotification.item_id}`,
+          // Use real activity_id for like/comment functionality
+          id: latestNotification.activity_id,
           activity_type: latestNotification.activity_type,
           user_id: latestNotification.target_user_id,
           item_id: latestNotification.item_id,

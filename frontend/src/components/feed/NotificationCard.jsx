@@ -82,7 +82,7 @@ export default function NotificationCard({
             </div>
 
             {/* Show comment content if notification type is comment - expandable */}
-            {notification.type === 'comment' && notification.comment_content && (
+            {notification.type === 'comment' && (notification.comment_text || notification.comment_content) && (
               <div
                 className="mt-1 ml-5 pl-2 border-l-2 border-slate-500 cursor-pointer hover:border-slate-400 transition-colors"
                 onClick={() => setCollapsedComments(prev => ({
@@ -91,9 +91,9 @@ export default function NotificationCard({
                 }))}
               >
                 <p className={`text-[11px] text-gray-300 italic ${collapsedComments[index] ? 'line-clamp-1' : ''}`}>
-                  "{notification.comment_content}"
+                  "{notification.comment_text || notification.comment_content}"
                 </p>
-                {notification.comment_content.length > 50 && (
+                {(notification.comment_text || notification.comment_content || '').length > 50 && (
                   <span className="text-[10px] text-gray-500 hover:text-gray-400">
                     {collapsedComments[index]
                       ? (language === 'ko' ? '더보기' : language === 'ja' ? 'もっと見る' : 'more')

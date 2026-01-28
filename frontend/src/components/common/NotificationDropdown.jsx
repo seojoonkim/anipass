@@ -95,10 +95,11 @@ export default function NotificationDropdown({
         ? `${displayName}さんがあなたの評価にいいねしました`
         : `${displayName} liked your rating`;
     } else if (notification.type === 'comment') {
-      const preview = notification.comment_content
-        ? (notification.comment_content.length > 30
-          ? notification.comment_content.substring(0, 30) + '...'
-          : notification.comment_content)
+      const commentText = notification.comment_text || notification.comment_content || '';
+      const preview = commentText
+        ? (commentText.length > 30
+          ? commentText.substring(0, 30) + '...'
+          : commentText)
         : '';
       return language === 'ko'
         ? `${displayName}님이 댓글을 남겼어요${preview ? `: "${preview}"` : ''}`
