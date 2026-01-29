@@ -39,9 +39,9 @@ function RatingCard({ anime, onRate }) {
     const updateStarSize = () => {
       if (cardRef.current) {
         const cardWidth = cardRef.current.offsetWidth;
-        // 카드 너비의 85%를 별 5개로 나눔 (더 크게)
+        // 카드 너비의 85%를 별 5개로 나눔 (10% 더 크게)
         const availableWidth = cardWidth * 0.85;
-        const singleStarSize = availableWidth / 5.0; // 더 크게 (6% increase): 5.3 → 5.0
+        const singleStarSize = availableWidth / 4.5; // 10% 더 크게: 5.0 → 4.5
         setStarSize(`${singleStarSize}px`);
       }
     };
@@ -195,7 +195,7 @@ function RatingCard({ anime, onRate }) {
   return (
     <div
       ref={cardRef}
-      className={`rounded-lg overflow-hidden transition-all duration-500 ease-out ${animating ? 'scale-110' : 'scale-100'
+      className={`rounded-lg overflow-hidden transition-all duration-500 ease-out self-start ${animating ? 'scale-110' : 'scale-100'
         }`}
       style={{
         background: status === 'RATED'
@@ -252,7 +252,7 @@ function RatingCard({ anime, onRate }) {
                 {/* Star Rating */}
                 <div
                   className="flex justify-center"
-                  style={{ gap: '2px' }}
+                  style={{ gap: '0px' }}
                   onMouseLeave={() => setHoverRating(0)}
                 >
                   {[1, 2, 3, 4, 5].map((star) => (

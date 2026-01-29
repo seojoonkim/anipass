@@ -249,7 +249,7 @@ export default function Navbar() {
             <div className="flex items-center flex-shrink-0">
               <Link to="/feed" className="flex items-center gap-1 md:gap-1.5 hover:opacity-80 transition-opacity group">
                 <img
-                  src="/logo.png"
+                  src="/logo.svg"
                   alt="Anibite"
                   className="w-6 h-6 md:w-7 md:h-7 object-contain"
                 />

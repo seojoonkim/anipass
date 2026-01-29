@@ -4,6 +4,7 @@ import { characterService } from '../services/characterService';
 import { useLanguage } from '../context/LanguageContext';
 import StarRating from '../components/common/StarRating';
 import { API_BASE_URL, IMAGE_BASE_URL } from '../config/api';
+import { getCharacterImageUrl } from '../utils/imageHelpers';
 
 export default function RateCharacters() {
   const { t, language, getAnimeTitle } = useLanguage();
@@ -43,9 +44,9 @@ export default function RateCharacters() {
         const cardElement = cardRefs.current[charId];
         if (cardElement) {
           const cardWidth = cardElement.offsetWidth;
-          // �?5개�? 카드??�?차도�?계산 (?�딩 고려)
-          const availableWidth = cardWidth - 12; // 좌우 ?�딩 px-2 (8px * 2) 줄임
-          const starSize = Math.floor(availableWidth / 5.29); // ???�게 (4% increase): 5.5 ??5.29
+          // �?5개�? 카드??�?차도�?계산 (?�딩 고려)
+          const availableWidth = cardWidth - 12; // 좌우 ?�딩 px-2 (8px * 2) 줄임
+          const starSize = Math.floor(availableWidth / 4.5); // ???�게 (4% increase): 5.5 ??4.5
           newSizes[charId] = `${starSize}px`;
         }
       });
@@ -217,9 +218,9 @@ export default function RateCharacters() {
 
       alert(
         language === 'ko'
-          ? `?��?�??�?�하?�데 ?�패?�습?�다${errorStatus}\n${errorDetail}`
+          ? `?��?�??�?�하?�데 ?�패?�습?�다${errorStatus}\n${errorDetail}`
           : language === 'ja'
-            ? `評価??��存に失敗?�ま?�た${errorStatus}\n${errorDetail}`
+            ? `評価??��存に失敗?�ま?�た${errorStatus}\n${errorDetail}`
             : `Failed to save rating${errorStatus}\n${errorDetail}`
       );
     }
@@ -281,7 +282,7 @@ export default function RateCharacters() {
         [characterId]: prevStatusState
       }));
 
-      alert(language === 'ko' ? '?�태 변경에 ?�패?�습?�다.' : language === 'ja' ? '?�テ?�タ?�変?�に失敗?�ま?�た?? : 'Failed to change status.');
+      alert(language === 'ko' ? '?�태 변경에 ?�패?�습?�다.' : language === 'ja' ? '?�テ?�タ?�変?�に失敗?�ま?�た?? : 'Failed to change status.');
     }
   };
 
@@ -296,14 +297,9 @@ export default function RateCharacters() {
     return 'bg-surface';
   };
 
-  const getImageUrl = (imageUrl) => {
-    if (!imageUrl) return '/placeholder-anime.svg';
-    if (imageUrl.startsWith('http')) return imageUrl;
-    // Use covers_large for better quality
-    const processedUrl = imageUrl.includes('/covers/')
-      ? imageUrl.replace('/covers/', '/covers_large/')
-      : imageUrl;
-    return `${IMAGE_BASE_URL}${processedUrl}`;
+  // 캐릭터 이미지 URL - imageHelpers의 getCharacterImageUrl 사용
+  const getImageUrl = (characterId, imageUrl) => {
+    return getCharacterImageUrl(characterId, imageUrl);
   };
 
   const getCurrentRating = (character) => {
@@ -325,25 +321,25 @@ export default function RateCharacters() {
           <div className="flex gap-2 items-center flex-wrap justify-center">
             {/* Rated Characters */}
             <div className="bg-surface px-3 py-1.5 rounded-md shadow-sm hover:shadow-md transition-shadow min-w-[80px] border border-border">
-              <div className="text-xs text-text-secondary text-center">{language === 'ko' ? '?��??�어?? : language === 'ja' ? '評価済み' : 'Rated'}</div>
+              <div className="text-xs text-text-secondary text-center">{language === 'ko' ? '?��??�어?? : language === 'ja' ? '評価済み' : 'Rated'}</div>
               <div className="text-base font-bold text-primary text-center tabular-nums">{(stats.rated || 0).toLocaleString()}</div>
             </div>
 
             {/* Want to Know */}
             <div className="bg-surface px-3 py-1.5 rounded-md shadow-sm hover:shadow-md transition-shadow min-w-[80px] border border-border">
-              <div className="text-xs text-text-secondary text-center">{language === 'ko' ? '?�고?�어?? : language === 'ja' ? '?�り?�い' : 'Want to Know'}</div>
+              <div className="text-xs text-text-secondary text-center">{language === 'ko' ? '?�고?�어?? : language === 'ja' ? '?�り?�い' : 'Want to Know'}</div>
               <div className="text-base font-bold text-secondary text-center tabular-nums">{(stats.wantToKnow || 0).toLocaleString()}</div>
             </div>
 
             {/* Not Interested */}
             <div className="bg-surface px-3 py-1.5 rounded-md shadow-sm hover:shadow-md transition-shadow min-w-[80px] border border-border">
-              <div className="text-xs text-text-secondary text-center">{language === 'ko' ? '관?�없?�요' : language === 'ja' ? '?�味?�し' : 'Not Interested'}</div>
+              <div className="text-xs text-text-secondary text-center">{language === 'ko' ? '관?�없?�요' : language === 'ja' ? '?�味?�し' : 'Not Interested'}</div>
               <div className="text-base font-bold text-text-tertiary text-center tabular-nums">{(stats.notInterested || 0).toLocaleString()}</div>
             </div>
 
             {/* Average Rating - Always show */}
             <div className="bg-surface px-3 py-1.5 rounded-md shadow-sm hover:shadow-md transition-shadow min-w-[80px] border border-border">
-              <div className="text-xs text-text-secondary text-center">{language === 'ko' ? '?�균 ?�점' : language === 'ja' ? '平均評価' : 'Avg Rating'}</div>
+              <div className="text-xs text-text-secondary text-center">{language === 'ko' ? '?�균 ?�점' : language === 'ja' ? '平均評価' : 'Avg Rating'}</div>
               <div className="text-base font-bold text-accent text-center tabular-nums">
                 {stats.averageRating > 0 ? `??${stats.averageRating.toFixed(1)}` : '-'}
               </div>
@@ -409,7 +405,7 @@ export default function RateCharacters() {
                     <Link to={`/character/${character.id}`} className="block">
                       <div className="aspect-[3/4] bg-surface-elevated relative overflow-hidden cursor-pointer">
                         <img
-                          src={getImageUrl(character.image_url)}
+                          src={getImageUrl(character.id, character.image_url)}
                           alt={character.name_full}
                           loading="lazy"
                           decoding="async"
@@ -423,17 +419,17 @@ export default function RateCharacters() {
                         {character.role && (
                           <div className={`absolute top-2 left-2 px-2 py-1 rounded text-xs font-bold text-white`} style={{
                             backgroundColor: character.role === 'MAIN'
-                              ? '#4EEAF7'  // 주연: ?��???(?�마??
+                              ? '#4EEAF7'  // 주연: ?��???(?�마??
                               : character.role === 'SUPPORTING'
-                                ? '#F59E0B'  // 조연: 주황??(?��??�과 ?��?
-                                : '#9CA3AF',  // ?�스?�라: ?�색
+                                ? '#F59E0B'  // 조연: 주황??(?��??�과 ?��?
+                                : '#9CA3AF',  // ?�스?�라: ?�색
                             color: 'white'
                           }}>
                             {character.role === 'MAIN'
                               ? (language === 'ko' ? '주연' : language === 'ja' ? '主役' : 'Main')
                               : character.role === 'SUPPORTING'
-                                ? (language === 'ko' ? '조연' : language === 'ja' ? '?�演' : 'Supporting')
-                                : (language === 'ko' ? '?�스?�라' : language === 'ja' ? '?�キ?�ト?? : 'Extra')}
+                                ? (language === 'ko' ? '조연' : language === 'ja' ? '?�演' : 'Supporting')
+                                : (language === 'ko' ? '?�스?�라' : language === 'ja' ? '?�キ?�ト?? : 'Extra')}
                           </div>
                         )}
 
@@ -447,10 +443,10 @@ export default function RateCharacters() {
                                 : '#6B7280'
                           }}>
                             {(hasRated || characterStatuses[character.id] === 'RATED')
-                              ? (language === 'ko' ? '?��??�료' : language === 'ja' ? '評価済み' : 'Rated')
+                              ? (language === 'ko' ? '?��??�료' : language === 'ja' ? '評価済み' : 'Rated')
                               : characterStatuses[character.id] === 'WANT_TO_KNOW'
-                                ? (language === 'ko' ? '?�고?�어?? : language === 'ja' ? '?�り?�い' : 'Want to Know')
-                                : (language === 'ko' ? '관?�없?�요' : language === 'ja' ? '?�味?�し' : 'Not Interested')}
+                                ? (language === 'ko' ? '?�고?�어?? : language === 'ja' ? '?�り?�い' : 'Want to Know')
+                                : (language === 'ko' ? '관?�없?�요' : language === 'ja' ? '?�味?�し' : 'Not Interested')}
                           </div>
                         )}
 
@@ -462,7 +458,7 @@ export default function RateCharacters() {
                         {/* Show rating stars on rated characters - hide on hover */}
                         {hasRated && starSizes[character.id] && character.my_rating && character.my_rating > 0 && (
                           <div className={`absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-opacity duration-150 ${hoveredCharacter === character.id ? 'opacity-0' : 'opacity-100'}`} style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
-                            <div className="flex drop-shadow-lg" style={{ gap: '2px' }}>
+                            <div className="flex drop-shadow-lg" style={{ gap: '0px' }}>
                               {[1, 2, 3, 4, 5].map((position) => {
                                 const rating = character.my_rating;
                                 const starPath = "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z";
@@ -525,7 +521,7 @@ export default function RateCharacters() {
                             onMouseLeave={() => setHoverRating(prev => ({ ...prev, [character.id]: 0 }))}
                           >
                             <div className="w-full flex flex-col items-center justify-center">
-                              <div className="flex" style={{ gap: '2px' }}>
+                              <div className="flex" style={{ gap: '0px' }}>
                                 {[1, 2, 3, 4, 5].map((position) => {
                                   const currentRating = getCurrentRating(character);
                                   const displayRating = hoverRating[character.id] || currentRating;
@@ -616,7 +612,7 @@ export default function RateCharacters() {
                                     : 'text-white/80 hover:text-white'
                                     }`}
                                 >
-                                  {language === 'ko' ? '?�고?�어?? : language === 'ja' ? '?�り?�い' : 'Want to Know'}
+                                  {language === 'ko' ? '?�고?�어?? : language === 'ja' ? '?�り?�い' : 'Want to Know'}
                                 </button>
                                 <span className="text-white/40">|</span>
                                 <button
@@ -630,7 +626,7 @@ export default function RateCharacters() {
                                     : 'text-white/60 hover:text-white/90'
                                     }`}
                                 >
-                                  {language === 'ko' ? '관?�없?�요' : language === 'ja' ? '?�味?�し' : 'Not Interested'}
+                                  {language === 'ko' ? '관?�없?�요' : language === 'ja' ? '?�味?�し' : 'Not Interested'}
                                 </button>
                               </div>
                             </div>
@@ -687,10 +683,10 @@ export default function RateCharacters() {
         ) : (
           <div className="text-center py-12">
             <div className="text-xl text-text-secondary mb-4">
-              {language === 'ko' ? '?��????�니메이?�이 ?�습?�다' : language === 'ja' ? '評価済み??��?�メ?�あ?�ま?�ん' : 'No rated anime'}
+              {language === 'ko' ? '?��????�니메이?�이 ?�습?�다' : language === 'ja' ? '評価済み??��?�メ?�あ?�ま?�ん' : 'No rated anime'}
             </div>
             <p className="text-text-tertiary">
-              {language === 'ko' ? '먼�? ?�니메이?�을 ?��??�면 캐릭?��? ?��??????�습?�다.' : language === 'ja' ? '?�ず?�ニ?�を評価?�る?�、キ?�ラ??��?�を評価?�き?�す?? : 'Rate anime first to rate characters.'}
+              {language === 'ko' ? '먼�? ?�니메이?�을 ?��??�면 캐릭?��? ?��??????�습?�다.' : language === 'ja' ? '?�ず?�ニ?�を評価?�る?�、キ?�ラ??��?�を評価?�き?�す?? : 'Rate anime first to rate characters.'}
             </p>
           </div>
         )}

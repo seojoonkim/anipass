@@ -7,11 +7,11 @@ export default function StarRating({ rating, onRatingChange, readonly = false, s
 
   const sizeClasses = {
     sm: 'w-4 h-4',
-    feed: 'w-5 h-5',
+    feed: 'w-[18px] h-[18px]',
     md: 'w-6 h-6',
     lg: 'w-8 h-8 sm:w-10 sm:h-10',
     xl: 'w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12',
-    widget: 'w-10 h-10 sm:w-11 sm:h-11',  // 위젯용 - 더 크고 간격 작게
+    widget: 'w-[46px] h-[46px] sm:w-[50px] sm:h-[50px]',  // 위젯용 - 15% 더 크게
   };
 
   useEffect(() => {
@@ -125,11 +125,11 @@ export default function StarRating({ rating, onRatingChange, readonly = false, s
 
   const gapClasses = {
     sm: 'gap-0.5',
-    feed: 'gap-px',
+    feed: 'gap-0',
     md: 'gap-1',
     lg: 'gap-1 sm:gap-1.5',
     xl: 'gap-1 sm:gap-1.5',
-    widget: 'gap-0.5',  // 위젯용 - 간격 좁게
+    widget: 'gap-px',  // 위젯용 - 간격 좁게 (1px)
   };
 
   const alignClasses = {

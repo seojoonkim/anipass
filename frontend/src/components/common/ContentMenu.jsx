@@ -96,30 +96,14 @@ export default function ContentMenu({
             >
               {language === 'ko' ? '수정' : language === 'ja' ? '編集' : 'Edit'}
             </button>
-          ) : hasReview ? (
-            // 리뷰가 있는 경우
+          ) : (
+            // 애니/캐릭터 평가 - 리뷰 유무와 관계없이 동일한 메뉴
             <button
               onClick={() => handleAction(onEdit)}
               className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-sm"
             >
-              {language === 'ko' ? '리뷰 수정' : language === 'ja' ? 'レビューを編集' : 'Edit Review'}
+              {language === 'ko' ? '수정' : language === 'ja' ? '編集' : 'Edit'}
             </button>
-          ) : (
-            // 리뷰가 없는 경우 (평가만 있음)
-            <>
-              <button
-                onClick={() => handleAction(onEditRating)}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-sm"
-              >
-                {language === 'ko' ? '별점 수정' : language === 'ja' ? '評価を編集' : 'Edit Rating'}
-              </button>
-              <button
-                onClick={() => handleAction(onAddReview)}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-sm"
-              >
-                {language === 'ko' ? '리뷰 추가' : language === 'ja' ? 'レビューを追加' : 'Add Review'}
-              </button>
-            </>
           )}
 
           <div className="border-t border-gray-200 my-1"></div>

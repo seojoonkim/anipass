@@ -27,15 +27,32 @@ export default function EditReviewModal({ isOpen, onClose, activity, onSave, mod
   const [saving, setSaving] = useState(false);
 
   // Helper to convert relative URLs to absolute - same logic as ActivityCard
-  const getImageUrl = (url) => {
+  const getImageUrl = (url, activityType = null, itemId = null) => {
     if (!url) return '/placeholder-anime.svg';
 
-    // If it's an AniList character image, try R2 first
+    // Normalize URL: ensure it starts with / if it's a relative path
+    if (!url.startsWith('http') && !url.startsWith('/')) {
+      url = `/${url}`;
+    }
+
+    // For character images from R2 paths - use backend API proxy
+    if (url.includes('/characters/')) {
+      // Extract character ID from path like "/images/characters/8485.jpg"
+      const match = url.match(/\/characters\/(\d+)\./);
+      const characterId = match && match[1] ? match[1] :
+        (activityType === 'character_rating' ? itemId : null);
+      if (characterId) {
+        return `${API_BASE_URL}/api/images/characters/${characterId}.jpg`;
+      }
+    }
+
+    // If it's an AniList character image, use API proxy
     if (url.includes('anilist.co') && url.includes('/character/')) {
       const match = url.match(/\/[bn](\d+)-/);
-      if (match && match[1]) {
-        const characterId = match[1];
-        return `${IMAGE_BASE_URL}/images/characters/${characterId}.jpg`;
+      const characterId = match && match[1] ? match[1] :
+        (activityType === 'character_rating' ? itemId : null);
+      if (characterId) {
+        return `${API_BASE_URL}/api/images/characters/${characterId}.jpg`;
       }
     }
 
@@ -117,13 +134,8 @@ export default function EditReviewModal({ isOpen, onClose, activity, onSave, mod
   if (!isOpen) return null;
 
   const getTitle = () => {
-    if (mode === 'edit_rating') {
-      return language === 'ko' ? '별점 수정' : language === 'ja' ? '評価を編集' : 'Edit Rating';
-    }
-    if (mode === 'add_review') {
-      return language === 'ko' ? '리뷰 추가' : language === 'ja' ? 'レビューを追加' : 'Add Review';
-    }
-    return language === 'ko' ? '리뷰 수정' : language === 'ja' ? 'レビューを編集' : 'Edit Review';
+    // 통일된 제목 - 별점과 리뷰를 함께 수정 가능
+    return language === 'ko' ? '평가 수정' : language === 'ja' ? '評価を編集' : 'Edit Rating';
   };
 
   const modalContent = (
@@ -173,7 +185,7 @@ export default function EditReviewModal({ isOpen, onClose, activity, onSave, mod
           <div className="mb-4 p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center gap-3">
               <img
-                src={getImageUrl(activity?.item_image)}
+                src={getImageUrl(activity?.item_image, activity?.activity_type, activity?.item_id)}
                 alt={activity?.item_title_korean || activity?.item_title || 'Item'}
                 className="w-14 h-[70px] object-cover rounded bg-gray-200 flex-shrink-0"
                 onError={(e) => {
@@ -202,9 +214,14 @@ export default function EditReviewModal({ isOpen, onClose, activity, onSave, mod
 
           {/* Rating */}
           <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              {language === 'ko' ? '별점' : language === 'ja' ? '評価' : 'Rating'} *
-            </label>
+            <div className="flex items-center gap-2 mb-1.5">
+              <label className="text-sm font-medium text-gray-700">
+                {language === 'ko' ? '별점' : language === 'ja' ? '評価' : 'Rating'} *
+              </label>
+              <span className="text-xs text-blue-500">
+                {language === 'ko' ? '(클릭하여 수정)' : language === 'ja' ? '(クリックして編集)' : '(Click to edit)'}
+              </span>
+            </div>
             <div className="flex items-center gap-4">
               <StarRating
                 rating={formData.rating}
